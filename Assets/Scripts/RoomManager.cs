@@ -36,7 +36,6 @@ public class RoomManager : MonoBehaviour
         {
             if (rooms[i].bounds.Contains(player.transform.position))
             {
-                //Debug.Log("Active room is now " + rooms[i].id);
                 currentRoom = rooms[i];
                 break;
             }
@@ -48,9 +47,9 @@ public class RoomManager : MonoBehaviour
     {
         rooms = new Room[(int)worldSize.x * (int)worldSize.y];
         int id = 0;
-        for (int x = 0; x < worldSize.x; x++)
+        for (int y = 0; y < worldSize.y; y++)
         {
-            for (int y = 0; y < worldSize.y; y++)
+            for (int x = 0; x < worldSize.x; x++)
             {
                 Room room = new Room();
 
@@ -84,6 +83,7 @@ public class RoomManager : MonoBehaviour
                 Debug.DrawLine(room.topLeft, room.topRight, Color.red);
                 Debug.DrawLine(room.topRight, room.bottomRight, Color.red);
                 Debug.DrawLine(room.bottomRight, room.bottomLeft, Color.red);
+                Handles.Label(room.center + Vector3.up * 8, "Room " + room.id);
             }
         }
     }

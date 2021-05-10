@@ -7,7 +7,7 @@ public class CameraManager : MonoBehaviour
 {
     public float ZIndex = -10;
 
-    Camera camera;
+    new Camera camera;
     Player player;
 
     int currentRoomID;
@@ -23,6 +23,8 @@ public class CameraManager : MonoBehaviour
     private void Update()
     {
         int newRoomID = RoomManager.Singleton.currentRoom.id;
+        //Debug.Log("Current room is " + newRoomID);
+
         if (newRoomID != currentRoomID)
         {
             currentRoomID = newRoomID;

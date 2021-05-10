@@ -6,13 +6,13 @@ public class SpawnPoint : MonoBehaviour
 {
 
     BoxCollider2D col;
-    AudioSource audio;
+    AudioSource audioSource;
 
     // Start is called before the first frame update
     void Start()
     {
         col = GetComponent<BoxCollider2D>();
-        audio = GetComponent<AudioSource>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -30,7 +30,7 @@ public class SpawnPoint : MonoBehaviour
             if (SpawnManager.Singleton.currentSpawnPoint != this.transform.position)
             {
                 SpawnManager.Singleton.currentSpawnPoint = this.transform.position;
-                audio.Play();
+                audioSource.Play();
             }
             
         }

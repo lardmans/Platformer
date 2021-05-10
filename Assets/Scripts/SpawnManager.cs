@@ -9,7 +9,7 @@ public class SpawnManager : MonoBehaviour
     public Vector3 currentSpawnPoint;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         Singleton = this;
 
@@ -19,6 +19,7 @@ public class SpawnManager : MonoBehaviour
         }
         else
         {
+            Debug.Log("WTF");
             currentSpawnPoint = new Vector3(-10, 4, 0);
         }
     }
