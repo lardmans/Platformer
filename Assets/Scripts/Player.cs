@@ -16,10 +16,13 @@ public class Player : MonoBehaviour
     public float wallSlideSpeedMax = 3f;
     public float wallStickTime = 0.25f;
     public Vector2 wallJumpClimb, wallJumpOff, wallLeap;
+    public float respawnTime = 2f;
 
     // References
     Controller2D controller;
     Vector3 velocity;
+    PlayerInput inputSystem;
+    Health health;
 
     // Privates
     float gravity;
@@ -32,35 +35,37 @@ public class Player : MonoBehaviour
     bool wallSliding;
     bool canDoubleJump;
     int wallDirX;
+    bool playerHasControl;
 
-    Material mat;
 
     // Start is called before the first frame update
     void Start()
     {
         controller = GetComponent<Controller2D>();
+        inputSystem = GetComponent<PlayerInput>();
+        health = GetComponent<Health>();
 
         gravity = -(2 * maxJumpHeight) / Mathf.Pow(timeToJumpApex, 2);
         maxJumpVelocity = Mathf.Abs(gravity) * timeToJumpApex;
         minJumpVelocity = Mathf.Sqrt(2 * Mathf.Abs(gravity) * minJumpHeight);
-        mat = GetComponent<MeshRenderer>().sharedMaterial;
+
+        transform.position = SpawnManager.Singleton.currentSpawnPoint;
+        playerHasControl = true;
+
+
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (! playerHasControl)
+        {
+            directionalInput = Vector2.zero;
+        }
+
         if (controller.collisions.below)
         {
             canDoubleJump = true;
-        }
-
-        if (canDoubleJump)
-        {
-            mat.color = Color.blue;
-        }
-        else
-        {
-            mat.color = Color.red;
         }
         
         CalculateVelocity();
@@ -132,6 +137,7 @@ public class Player : MonoBehaviour
 
     public void OnJumpInputDown()
     {
+
         if (wallSliding)
         {
             if (wallDirX == directionalInput.x)
@@ -183,5 +189,22 @@ public class Player : MonoBehaviour
         {
             velocity.y = minJumpVelocity;
         }  
+    }
+
+    public void Die()
+    {
+        inputSystem.playerIsControlling = false;
+        StartCoroutine(Respawn());
+    }
+
+
+    private IEnumerator Respawn()
+    {
+        Vector3 spawnPoint = SpawnManager.Singleton.currentSpawnPoint;
+        yield return new WaitForSeconds(respawnTime);
+        transform.position = spawnPoint;
+        velocity = Vector2.zero;
+        inputSystem.playerIsControlling = true;
+        health.Regenerate();
     }
 }

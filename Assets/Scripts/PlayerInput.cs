@@ -6,6 +6,8 @@ using UnityEngine;
 public class PlayerInput : MonoBehaviour
 {
     public KeyCode jumpKey;
+
+    public bool playerIsControlling;
     Player player;
 
     Material mat;
@@ -14,12 +16,18 @@ public class PlayerInput : MonoBehaviour
     void Start()
     {
         player = GetComponent<Player>();
-        
+        playerIsControlling = true;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (! playerIsControlling)
+        {
+            player.SetDirectionalInput(Vector2.zero);
+            return;
+        }
+
         Vector2 directionalInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 
         player.SetDirectionalInput(directionalInput);
@@ -35,4 +43,5 @@ public class PlayerInput : MonoBehaviour
         }
 
     }
+
 }

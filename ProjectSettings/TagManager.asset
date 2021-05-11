@@ -3,8 +3,7 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags:
-  - Through
+  tags: [Through]
   layers:
   - Default
   - TransparentFX
@@ -41,4 +40,19 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: 400 Backgrounds
+    uniqueID: 2150110171
+    locked: 0
+  - name: Regular level tiles
+    uniqueID: 2687376391
+    locked: 0
+  - name: Level parts
+    uniqueID: 308502731
+    locked: 0
+  - name: Player
+    uniqueID: 2937333165
+    locked: 0
+  - name: Foreground
+    uniqueID: 2172158667
     locked: 0
