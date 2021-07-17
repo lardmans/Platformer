@@ -17,6 +17,7 @@ public class Player : MonoBehaviour
     public float wallStickTime = 0.25f;
     public Vector2 wallJumpClimb, wallJumpOff, wallLeap;
     public float respawnTime = 2f;
+    public Vector3 spawnPositionOffset;
 
     // References
     Controller2D controller;
@@ -95,7 +96,11 @@ public class Player : MonoBehaviour
     void CalculateVelocity()
     {
         float targetVelocityX = directionalInput.x * movementSpeed;
-        velocity.x = Mathf.SmoothDamp(velocity.x, targetVelocityX, ref velocityXSmoothing, (controller.collisions.below) ? accelerationTimeGrounded : accelerationTimeAirborne);
+
+        float accelerationTime = (controller.collisions.below) ? (directionalInput.x == 0) ? accelerationTimeGrounded : 0 : (directionalInput.x == 0) ? accelerationTimeAirborne : 0;
+
+        velocity.x = Mathf.SmoothDamp(velocity.x, targetVelocityX, ref velocityXSmoothing, accelerationTime);
+
         //velocity.x = targetVelocityX;
         velocity.y += gravity * Time.deltaTime;
     }
@@ -194,6 +199,7 @@ public class Player : MonoBehaviour
     public void Die()
     {
         inputSystem.playerIsControlling = false;
+        GameEvents.Singleton.Die();
         StartCoroutine(Respawn());
     }
 
@@ -201,7 +207,9 @@ public class Player : MonoBehaviour
     private IEnumerator Respawn()
     {
         Vector3 spawnPoint = SpawnManager.Singleton.currentSpawnPoint;
+        spawnPoint += spawnPositionOffset;
         yield return new WaitForSeconds(respawnTime);
+        GameEvents.Singleton.Respawn();
         transform.position = spawnPoint;
         velocity = Vector2.zero;
         inputSystem.playerIsControlling = true;

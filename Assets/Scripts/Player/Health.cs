@@ -13,7 +13,7 @@ public class Health : MonoBehaviour
 
     float currentHealth;
     AudioSource audioSource;
-    bool alive;
+    public bool alive;
 
     // Start is called before the first frame update
     void Start()

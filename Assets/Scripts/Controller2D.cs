@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
+
 public class Controller2D : RaycastController
 {
+    public Vector2 velocity;
+
     public float maxSlopeAngle = 60f;
 
     public CollisionInfo collisions;
@@ -15,6 +18,7 @@ public class Controller2D : RaycastController
     {
         base.Start();
         collisions.faceDir = 1;
+        velocity = Vector2.zero;
     }
 
     public void Move(Vector2 moveAmount, bool standingOnPlatform = false)
@@ -46,14 +50,13 @@ public class Controller2D : RaycastController
             VerticalCollisions(ref moveAmount);
         }
 
+        velocity = moveAmount;
         transform.Translate(moveAmount);
 
         if (standingOnPlatform)
         {
             collisions.below = true;
         }
-
-        
     }
 
     void HorizontalCollisions(ref Vector2 moveAmount)

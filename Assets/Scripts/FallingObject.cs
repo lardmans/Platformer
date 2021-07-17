@@ -3,27 +3,54 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class FallingObject : Triggerable
+public class FallingObject : RoomBehavior, ITriggerable
 {
+    // Settings
+    [SerializeField]
+    float gravityScale = 1;
 
+    // Privates
     Rigidbody2D rb;
-    // Start is called before the first frame update
-    void Start()
+    bool hasBeenTriggered = false;
+
+    private void Awake()
     {
+        base.Awake();
+
         rb = GetComponent<Rigidbody2D>();
         rb.bodyType = RigidbodyType2D.Static;
+        rb.gravityScale = gravityScale;
+        SetDefaultValues();
     }
 
-    // Update is called once per frame
-    void Update()
+    // Start is called before the first frame update
+    new void Start()
     {
-        
+        base.Start();
     }
 
-    public override IEnumerator Activate(float delay)
+    public override void SetDefaultValues()
     {
-        yield return new WaitForSeconds(delay);
-        rb.bodyType = RigidbodyType2D.Dynamic;
+        base.SetDefaultValues();
+    }
+
+    public IEnumerator Activate(float delay)
+    {
+        if (! hasBeenTriggered)
+        {
+            hasBeenTriggered = true;
+            yield return new WaitForSeconds(delay);
+            rb.bodyType = RigidbodyType2D.Dynamic;
+        }
+    }
+
+    public override void Renew()
+    {
+        base.Renew();
+
+        transform.position = defaultPosition;
+        hasBeenTriggered = false;
+        rb.bodyType = RigidbodyType2D.Static;
     }
 
 }

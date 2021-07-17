@@ -5,15 +5,11 @@ using UnityEngine;
 [RequireComponent(typeof(Collider2D))]
 public class Trigger : MonoBehaviour
 {
-
-    public Triggerable[] subjects;
-    public float delay = 0f;
-    public bool repeatable = false;
+    [SerializeField]
+    public TriggerSubject[] subjects;
 
     // Privates
     Collider2D col;
-    private bool activated = false;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -24,15 +20,28 @@ public class Trigger : MonoBehaviour
     {
         if (collision.gameObject.tag == "Player")
         {
-            if (!activated)
+            if (subjects.Length > 0)
             {
-                activated = repeatable ? false : true;
-
-                foreach (Triggerable subject in subjects)
+                foreach (TriggerSubject ts in subjects)
                 {
-                    StartCoroutine(subject.Activate(delay));
+                    ITriggerable[] triggerables = ts.subject.GetComponents<ITriggerable>();
+
+                    if (triggerables != null)
+                    {
+                        foreach (ITriggerable triggerable in triggerables)
+                        {
+                            StartCoroutine(triggerable.Activate(ts.delay));
+                        }
+                    }
                 }
             }
         }
+    }
+
+    [System.Serializable]
+    public struct TriggerSubject
+    {
+        public float delay;
+        public GameObject subject;
     }
 }

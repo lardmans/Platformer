@@ -8,26 +8,32 @@ public class RoomManager : MonoBehaviour
     [Header("Settings")]
     public Vector2Int worldSize;
     public Vector2Int roomSize;
+    public bool generateRoomObjects;
+    public GameObject roomHolderHolder;
+    public GameObject roomHolderPrefab;
 
     public static RoomManager Singleton;
     public Room[] rooms;
     public Room currentRoom;
 
+
     Player player;
 
+    private void Awake()
+    {
+        Singleton = this;
+        InitRooms();
+    }
     // Start is called before the first frame update
     void Start()
     {
-        Singleton = this;
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-        InitRooms();
     }
 
     // Update is called once per frame
     void Update()
     {
         UpdateCurrentRoom();
-
     }
 
     void UpdateCurrentRoom()
@@ -36,11 +42,47 @@ public class RoomManager : MonoBehaviour
         {
             if (rooms[i].bounds.Contains(player.transform.position))
             {
-                currentRoom = rooms[i];
-                break;
+                if (rooms[i].id != currentRoom.id)
+                {
+                    // aha this is a new room
+                    GameEvents.Singleton.ExitRoom(currentRoom.id);
+                    currentRoom = rooms[i];
+                    GameEvents.Singleton.EnterRoom(currentRoom.id);
+                    break;
+                }
             }
         }
-        
+    }
+
+    private void OnValidate()
+    {
+        if (generateRoomObjects)
+        {
+            generateRoomObjects = false;
+
+            if (roomHolderHolder == null || roomHolderPrefab == null)
+            {
+                Debug.Log("References not set.");
+                return;
+            }
+
+            InitRooms();
+
+            foreach (Room room in rooms)
+            {
+                GameObject holder = GameObject.Find("Room " + room.id);
+
+                if (holder == null)
+                {
+                    holder = Instantiate(roomHolderPrefab, room.center, Quaternion.identity, roomHolderHolder.transform);
+                    holder.name = "Room " + room.id;
+                }
+                else
+                {
+                    holder.transform.position = room.center;
+                }
+            }
+        }
     }
 
     void InitRooms()
@@ -86,6 +128,33 @@ public class RoomManager : MonoBehaviour
                 Handles.Label(room.center + Vector3.up * 8, "Room " + room.id);
             }
         }
+    }
+
+    public bool PositionIsInRoom(Vector3 pos, int roomID)
+    {
+        Room room = rooms[roomID];
+
+        if (pos.x > room.topLeft.x &&
+            pos.x < room.topRight.x &&
+            pos.y > room.bottomLeft.y &&
+            pos.y < room.topLeft.y)
+        {
+            return true;
+        }
+        else return false;
+    }
+
+    public int GetRoomIDFromPosition(Vector3 pos)
+    {
+        int a = (int) Mathf.Floor(pos.x / roomSize.x);
+        int b = (int) Mathf.Floor(pos.y / roomSize.y);
+
+        return b * worldSize.x + a;
+    }
+
+    public bool RoomExists(int roomID)
+    {
+        return (roomID >= 0 && roomID < worldSize.x * worldSize.y);
     }
 
 }
